@@ -9,11 +9,16 @@ fn main() {
     }
 
     if pid == 0 {
-        let command = CString::new("/usr/bin/echo").unwrap();
-        let arg = CString::new("Hello world.").unwrap();
+        let command = CString::new("/usr/bin/env").unwrap();
+        let env1 = CString::new("ZIPROC1=foo").unwrap();
+        let env2 = CString::new("ZIPROC2=bar").unwrap();
         let status;
         unsafe {
-            status = libc::execv(command.as_ptr(), vec![command.as_ptr(), arg.as_ptr(), std::ptr::null()].as_ptr())
+            status = libc::execve(
+                command.as_ptr(),
+                vec![command.as_ptr(), std::ptr::null()].as_ptr(),
+                vec![env1.as_ptr(), env2.as_ptr(), std::ptr::null()].as_ptr(),
+            )
         }
         println!("s: {:?}", status)
     } else {
